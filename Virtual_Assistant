@@ -1,0 +1,313 @@
+import os
+import pyttsx3
+import speech_recognition as sr
+import subprocess  # To open applications
+import datetime  # To work with dates and times
+import calendar  # To work with calendar
+
+# Initialize the text-to-speech engine
+myspeaker = pyttsx3.init()
+
+def speak(text):
+    myspeaker.say(text)
+    myspeaker.runAndWait()
+
+def recognize_speech_from_mic():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        speak("Please speak.....")
+        print("\n", "\033[93m\t\t\t\tListening.....\033[0m")
+
+        recognizer.adjust_for_ambient_noise(source)  # Adjusts for background noise
+        audio = recognizer.listen(source)
+
+    try:
+        command = recognizer.recognize_google(audio)
+        print("\033[32m\t\t\tYou said: " + command + "\033[0m")  # Output in green
+
+        return command.lower()
+    
+    except sr.UnknownValueError:
+        print("\n","\t\t\tSorry, I did not understand that.")
+        speak("Sorry, I did not understand that.")
+        return ""
+    
+    except sr.RequestError:
+        print("Could not request results from Google Speech Recognition service.")
+        speak("Could not request results from Google Speech Recognition service.")
+        return ""
+
+def get_command():
+    # Ask the user to choose between typing or speaking
+    choice = input("Would you like to type or speak your command? (Type 'text' or 'voice'): ").strip().lower()
+    
+    if choice == "voice":
+        return recognize_speech_from_mic()
+    elif choice == "text":
+        speak("Please type your command") 
+        command = input('\033[93m\t\t\tPlease type your command: \033[0m')
+
+        print("\n","\033[32m" + "\t\t\tYou typed: " + command + "\033[0m")  # Print in yellow
+        return command.lower()
+
+    else:
+        speak("Invalid choice, please type 'voice' or 'text'.")
+        return get_command()
+
+import os
+
+# ANSI color codes for dark colors
+DARK_MAGENTA = "\033[35m"  # Dark Magenta color
+DARK_GREEN = "\033[32m"     # Dark Green color
+RESET = "\033[0m"  # Resets the color to the default terminal color
+
+# Get the width of the console window with error handling
+try:
+    console_width = os.get_terminal_size().columns
+except OSError:
+    console_width = 80  # Default width if terminal size cannot be determined
+
+# Stylish welcome message
+welcome_message = f"\t\t{DARK_MAGENTA}*** Welcome to my project ***{RESET}"
+separator_line = f"\t\t{DARK_GREEN}==============================={RESET}"
+
+# Center the messages
+padded_welcome = welcome_message.center(console_width)
+padded_separator = separator_line.center(console_width)
+
+# Speak the welcome message
+speak("Welcome to my project")  # Ensure 'speak' is defined elsewhere
+
+# Display the messages
+print(padded_welcome)
+print(padded_separator)
+
+
+while True:
+    # Print "Options" in blue using ANSI code
+    print("\n","\033[31m Options:\033[0m")  # Blue color for "Options" header
+
+    # Print options list in red using ANSI code
+    print("""\033[31m
+      1. See Date
+      2. Display Time
+      3. Check Username
+      4. Show Calendar
+      5. Open Chrome
+      6. Open WhatsApp Web
+      7. Open Notepad
+      8. Open LinkedIn
+      9. Open Microsoft Word
+     10. Open VirtualBox
+     11. Open CodeBlocks
+     12. Open Google Meet
+     13. Open Classroom
+     14. Open Anaconda Navigator
+     15. Open Command Prompt
+     16. Open GitHub
+     17. Open PowerPoint
+     18. Open YouTube
+     19. Who are you?
+     20. Who am I?
+     21. Exit
+     \033[0m""")  # Red color for options list
+   
+    # Get the command using chosen input method
+    command = get_command().lower().strip()
+
+    # Check for negative commands
+    is_negative_command = "do not" in command or "don't" in command
+
+    # Implementing the command responses
+    if "date" in command:
+        current_date = datetime.datetime.now().strftime("%B %d, %Y")
+        speak(f"Today's date is {current_date}")
+
+        print("\n","\t\t\t\t\t\033[34m" + current_date + "\033[0m")  # Blue color for date
+        
+        import datetime
+
+    elif "time" in command:
+        current_time = datetime.datetime.now().strftime("%I:%M %p")
+        speak(f"The current time is {current_time}")
+        print("\n", "\t\t\t\t\t\033[34m" + current_time + "\033[0m")
+
+
+    elif "username" in command:
+        username = "Yagsha Rafat"  # Set the username directly
+        speak(f"Your username is {username}")
+        print("\n","\t\t\t\t\t\033[34m " + username + "\033[0m")  # Blue color for username
+
+
+    elif "calendar" in command:
+        if is_negative_command:
+            speak("tOkay, I won't show the calendar.")
+            print("\t\t\t\t\t\033[34mNot showing calendar.\033[0m")  # Output in blue
+        else:
+            cal = calendar.month(datetime.datetime.now().year, datetime.datetime.now().month)
+            speak("Here is the current month's calendar.")
+
+            # Get terminal width with error handling
+            try:
+                terminal_width = os.get_terminal_size().columns
+            except OSError:
+                terminal_width = 80  # Default width if terminal size cannot be determined
+
+            # Center the whole calendar output in blue
+            centered_cal = "\n".join(line.center(terminal_width) for line in cal.splitlines())
+            print("\n", "\033[34m" + centered_cal + "\033[0m")  # Blue color here
+
+
+    elif "chrome" in command:
+        if is_negative_command:
+            speak("Okay, I won't open Chrome.")
+            print("\n","\t\t\t\t\t\033[34mNot opening Chrome.\033[0m")  # Output in blue
+        else:
+            speak("Opening Chrome")
+            print("\n","\t\t\t\t\t\033[34mOpening Chrome...\033[0m")  # Output in blue
+            subprocess.Popen(["C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"])
+
+    elif "whatsapp" in command:
+        if is_negative_command:
+            speak("Okay, I won't open WhatsApp.")
+            print("\n","\t\t\t\t\t\033[34mNot opening WhatsApp.\033[0m")  # Output in blue
+        else:
+            speak("Opening WhatsApp Web")
+            print("\n","\t\t\t\t\t\033[34mOpening WhatsApp Web...\033[0m")  # Output in blue
+            subprocess.Popen(["C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", "https://web.whatsapp.com/"])  # Open WhatsApp Web
+
+    elif "notepad" in command:
+        if is_negative_command:
+            speak("Okay, I won't open Notepad.")
+            print("\n","\t\t\t\t\t\033[34mNot opening Notepad.\033[0m")  # Output in blue
+        else:
+            speak("Opening Notepad")
+            print("\n","\t\t\t\t\t\033[34mOpening Notepad...\033[0m")  # Output in blue
+            subprocess.Popen(["notepad.exe"])  # Opens Notepad
+
+    elif "linkedin" in command:
+        if is_negative_command:
+            speak("Okay, I won't open LinkedIn.")
+            print("\n","\t\t\t\t\t\033[34mNot opening LinkedIn.\033[0m")  # Output in blue
+        else:
+            speak("Opening LinkedIn")
+            print("\n","\t\t\t\t\t\033[34mOpening LinkedIn...\033[0m")  # Output in blue
+            subprocess.Popen(["C:\\Program Files\\Internet Explorer\\iexplore.exe", "https://www.linkedin.com/"])  # Adjust path if necessary
+
+    elif "microsoft word" in command:
+        if is_negative_command:
+            speak("Okay, I won't open Microsoft Word.")
+            print("\n","\t\t\t\t\t\033[34mNot opening Microsoft Word.\033[0m")  # Output in blue
+        else:
+            speak("Opening Microsoft Word")
+            print("\n","\t\t\t\t\t\033[34mOpening Microsoft Word...\033[0m")  # Output in blue
+            subprocess.Popen(["C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE"])  # Adjust path if necessary
+
+    elif "virtualbox" in command:
+        if is_negative_command:
+            speak("Okay, I won't open VirtualBox.")
+            print("\n","\t\t\t\t\t\033[34mNot opening VirtualBox.\033[0m")  # Output in blue
+        else:
+            speak("Opening VirtualBox")
+            print("\n","\t\t\t\t\t\033[34mOpening VirtualBox...\033[0m")  # Output in blue
+            subprocess.Popen(["C:\\Program Files\\Oracle\\VirtualBox\\VirtualBox.exe"])  # Adjust path if necessary
+
+    elif "codeblocks" in command:
+        if is_negative_command:
+            speak("Okay, I won't open CodeBlocks.")
+            print("\n","\t\t\t\t\t\033[34mNot opening CodeBlocks.\033[0m")  # Output in blue
+        else:
+            speak("Opening CodeBlocks")
+            print("\n","\t\t\t\t\t\033[34mOpening CodeBlocks...\033[0m")  # Output in blue
+            subprocess.Popen(["C:\\Program Files\\CodeBlocks\\codeblocks.exe"])  # Adjust path if necessary
+
+    elif "google meet" in command:
+        if is_negative_command:
+            speak("Okay, I won't open Google Meet.")
+            print("\n","\t\t\t\t\t\033[34mNot opening Google Meet.\033[0m")  # Output in blue
+        else:
+            speak("Opening Google Meet")
+            print("\n","\t\t\t\t\t\033[34mOpening Google Meet...\033[0m")  # Output in blue
+            subprocess.Popen(["C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", "https://meet.google.com/"])  # Open Google Meet
+
+    elif "classroom" in command:  # Change "microsoft teams" to "classroom"
+        if is_negative_command:
+            speak("Okay, I won't open Google Classroom.")
+            print("\n","\t\t\t\t\t\033[34mNot opening Google Classroom.\033[0m")  # Output in blue
+        else:
+            speak("Opening Google Classroom")
+            print("\n","\t\t\t\t\t\033[34mOpening Google Classroom...\033[0m")  # Output in blue
+            subprocess.Popen(["C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", "https://classroom.google.com/"])  # Open Google Classroom
+
+    elif "anaconda" in command:  # Check for "anaconda" command
+        if is_negative_command:
+            speak("Okay, I won't open Anaconda Navigator.")
+            print("\n","\t\t\t\t\t\033[34mNot opening Anaconda Navigator.\033[0m")  # Output in blue
+        else:
+            speak("Opening Anaconda Navigator")
+            print("\n","\t\t\t\t\t\033[34mOpening Anaconda Navigator...\033[0m")  # Output in blue
+            subprocess.Popen(["anaconda-navigator.exe"])  # Adjust the path if necessary
+
+   
+
+    elif "command prompt" in command.lower():  # Make the check case-insensitive
+        if is_negative_command:
+            speak("Okay, I won't open Command Prompt.")
+            print("\n", "\t\t\t\t\t\033[34mNot opening Command Prompt.\033[0m")  # Output in blue
+        else:
+            speak("Opening Command Prompt")
+            print("\n", "\t\t\t\t\t\033[34mOpening Command Prompt...\033[0m")  # Output in blue
+            subprocess.Popen("cmd.exe")  # Opens Command Prompt
+
+
+    elif "github" in command:
+        if is_negative_command:
+            speak("Okay, I won't open GitHub.")
+            print("\n","\t\t\t\t\t\033[34mNot opening GitHub.\033[0m")  # Output in blue
+        else:
+            speak("Opening GitHub")
+            print("\n","\t\t\t\t\t\033[34mOpening GitHub...\033[0m")  # Output in blue
+            subprocess.Popen(["C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", "https://github.com/"])  # Open GitHub in Chrome
+
+    elif "powerpoint" in command:  # Command to open PowerPoint
+        if is_negative_command:
+            speak("Okay, I won't open PowerPoint.")
+            print("\n","\t\t\t\t\t\033[34mNot opening PowerPoint.\033[0m")  # Output in blue
+        else:
+            speak("Opening PowerPoint")
+            print("\n","\t\t\t\t\t\033[34mOpening PowerPoint...\033[0m")  # Output in blue
+            subprocess.Popen(["C:\\Program Files\\Microsoft Office\\root\\Office16\\POWERPNT.EXE"])  # Adjust path if necessary
+            # Assuming necessary imports and initial setup are done earlier
+
+
+    elif "youtube" in command:  # Command to open YouTube
+        if is_negative_command:
+            speak("Okay, I won't open YouTube.")
+            print("\n","\t\t\t\t\t\033[34mNot opening YouTube.\033[0m")  # Output in blue
+        else:
+            speak("Opening YouTube")
+            print("\n","\t\t\t\t\t\033[34mOpening YouTube...\033[0m")  # Output in blue
+            subprocess.Popen(["C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", "https://www.youtube.com/"])  # Open YouTube in Chrome
+
+    elif "who are you" in command:
+        response = "I am your virtual assistant. I can help you with various tasks."
+        speak(response)
+        print("\n","\t\t\t\033[34m" + response + "\033[0m")  # Output in blue
+
+    elif "who am i" in command:
+        username = "Yagsha Rafat"  # Set the username directly
+        response = f"You are {username}."
+        speak(response)
+        print("\n","\t\t\t\t\t\033[34m" + response + "\033[0m")  # Output in blue
+
+
+    elif "exit" in command:
+        response = "Thanking you!"
+        speak(response)
+        print("\n","\t\t\t\t\t\033[34m" + response + "\033[0m")  # Output in blue
+        break
+
+    else:
+        response = "Command not supported"
+        speak(response)
+        print("\n","\t\t\t\033[34m" + response + "\033[0m")  # Output in blue
